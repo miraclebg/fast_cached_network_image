@@ -30,6 +30,8 @@ class FastCachedImage extends StatefulWidget {
   final int? cacheWidth;
   final int? cacheHeight;
 
+  final Dio? dio;
+
   /// If [cacheWidth] or [cacheHeight] are provided, it indicates to the
   /// engine that the image must be decoded at the specified size. The image
   /// will be rendered to the constraints of the layout or [width] and [height]
@@ -117,6 +119,7 @@ class FastCachedImage extends StatefulWidget {
   const FastCachedImage(
       {required this.url,
       this.headers,
+      this.dio,
       this.scale = 1.0,
       this.errorBuilder,
       this.semanticLabel,
@@ -302,7 +305,7 @@ class _FastCachedImageState extends State<FastCachedImage>
 
     try {
       final Uri resolved = Uri.base.resolve(url);
-      Dio dio = Dio();
+      Dio dio = widget.dio ?? Dio();
 
       if (!mounted) return;
 
@@ -379,6 +382,7 @@ class _FastCachedImageState extends State<FastCachedImage>
 class _ImageResponse {
   Uint8List imageData;
   String? error;
+
   _ImageResponse({required this.imageData, required this.error});
 }
 
@@ -540,13 +544,20 @@ class FastCachedImageProvider extends ImageProvider<NetworkImage>
   /// Creates an object that fetches the image at the given URL.
   ///
   /// The arguments [url] and [scale] must not be null.
-  const FastCachedImageProvider(this.url, {this.scale = 1.0, this.headers});
+  const FastCachedImageProvider(
+    this.url, {
+    this.scale = 1.0,
+    this.headers,
+    this.dio,
+  });
 
   @override
   final String url;
 
   @override
   final double scale;
+
+  final Dio? dio;
 
   @override
   final Map<String, String>? headers;
@@ -581,7 +592,8 @@ class FastCachedImageProvider extends ImageProvider<NetworkImage>
   ) async {
     try {
       assert(key == this);
-      Dio dio = Dio();
+      Dio dio = this.dio ?? Dio();
+
       FastCachedImageConfig._checkInit();
       Uint8List? image = await FastCachedImageConfig._getImage(url);
       if (image != null) {

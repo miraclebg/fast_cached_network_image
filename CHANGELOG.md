@@ -73,3 +73,16 @@
 * ## 1.2.9
 
 * Added tags
+
+* ## 1.3.1+3
+
+* Removed FVM
+* Switch hive to hive_ce
+
+* ## 1.3.2+4
+
+* Switched to Flutter 3.29.0
+
+* ## 1.3.3+5
+
+* Fixed you need to provide a path to store the box issue
